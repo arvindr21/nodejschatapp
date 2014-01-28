@@ -1,0 +1,38 @@
+doctype html
+html(lang='en')
+head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    meta(name='description', content='Node js Chat Application')
+    meta(name='author', content='Arvind Ravulavaru')
+    title Arvind Ravulavaru Node js Chat Application
+    //
+       Bootstrap core CSS 
+    link(href='/bootstrap.min.css', rel='stylesheet')
+    link(href='/chat.css', rel='stylesheet')
+    //
+       Custom styles for this template 
+    link(href='/signin.css', rel='stylesheet')
+    script(src='/chat.js')
+    script(src='/socket.io/socket.io.js')
+    script(src='/jquery.min.js')
+    script(src='/ga.js')
+    //
+       HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries 
+    //if lt IE 9
+      script(src='https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js')
+      script(src='https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js')
+
+      
+  body
+    .container
+      h1 Welcome to Node.js Chat application
+      h3 {This is a free server - expect some delay}
+      #holder
+        #content
+        input#name.form-control(type='text', placeholder='UserName', required='required', autofocus='autofocus')
+        br
+        input#field.form-control(type='text', placeholder='Message', required='required')
+        br
+        button#send.btn.btn-lg.btn-primary.btn-block(type='submit') Send 
