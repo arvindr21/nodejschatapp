@@ -1,4 +1,4 @@
-nodejschatapp
-=============
+A Node.js Web Sockets Chat application
+======================================
 
-nodejschatapp
+Hosted @: http://nodejschatapp.herokuapp.com/
