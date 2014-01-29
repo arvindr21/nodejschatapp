@@ -11,12 +11,14 @@ head
        Bootstrap core CSS 
     link(href='/bootstrap.min.css', rel='stylesheet')
     link(href='/chat.css', rel='stylesheet')
+    link(href='/jquery.cssemoticons.css', rel='stylesheet')
     //
        Custom styles for this template 
     link(href='/signin.css', rel='stylesheet')
     script(src='/chat.js')
     script(src='/socket.io/socket.io.js')
     script(src='/jquery.min.js')
+    script(src='/jquery.cssemoticons.min.js')
     script(src='/ga.js')
     //
        HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries 
@@ -29,8 +31,11 @@ head
     .container
       h1 Welcome to Node.js Chat application
       h3 {This is a free server - expect some delay}
-      #holder
-        #content
+      label#as
+          input#autoscroll(type='checkbox', checked='checked')
+          | Auto Scroll:
+      #holder        
+        #content.emo
         input#name.form-control(type='text', placeholder='UserName', required='required', autofocus='autofocus')
         br
         input#field.form-control(type='text', placeholder='Message', required='required')

@@ -1,6 +1,8 @@
 var express = require("express");
 var logfmt = require("logfmt");
+var connected_users={};
 var app = express();
+var username;
 var jf = require('jsonfile')
   , util = require('util');
 	app.use(logfmt.requestLogger());
@@ -29,8 +31,17 @@ app.use(express.static(__dirname + '/public'));
 var io = require('socket.io').listen(app.listen(port)); 
 
 io.sockets.on('connection', function (socket) {
-    socket.emit('message', { message: 'welcome to the chat ' });
-    socket.on('send', function (data) {
-        io.sockets.emit('message', data);
+	socket.emit('message', { message: 'welcome to the chat ', "connected_users" : connected_users });    
+	socket.on('send', function (data) {
+		username = data.username;
+		delete connected_users[username];
+        connected_users[username] = data.username;
+		data.connected_users = connected_users;
+		io.sockets.emit('message', data);		
+		console.log("conc", connected_users, username);
+    });
+	socket.on('close',function(){
+		console.log("disc", connected_users, username);
+        delete connected_users[username];
     });
 });
