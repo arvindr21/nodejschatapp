@@ -2,6 +2,7 @@ window.onload = function() {
  
     var messages = [];
     var socket = io.connect('http://nodejschatapp.herokuapp.com/');
+    //var socket = io.connect('http://192.168.1.8:9999');
     var field = $("#field");
     var sendButton = $("#send");
     var content = $("#content");
@@ -9,27 +10,29 @@ window.onload = function() {
 	var flag = true;
 	var f = true;
 
+	var currentUser = "";
+
 	content.html("Loading.. Please wait!");
 	$("#content").after('<ul id="usersOnline" class="usersOnline"><li>Users Online</li></ul><br style="clear:both;"/>');
 
 
 
-    socket.on('message', function (data) {
+    socket.on('message', function (data){
 		if(data.message) {
 			var html = '';
 			var spid = new Date().getTime();
-                html += '<span id="chat_'+spid+'"><b>' + (data.username ? data.username : 'Server') + ': </b>';
+			var spid2 = new Date();
+                html += '<span id="chat_'+spid+'"><b>' + (data.username ? data.username : 'Server') + ':</b>';
+                html += '<span id="msgTime">(' +spid2.getHours()+ ':' +spid2.getMinutes()+')-- &nbsp</span>'
                 html += '<i id="msg_'+spid+'">'+data.message+'</i></span><br />';
 				messages.push(html);
 				if($("#autoscroll").prop("checked"))
-				$("#content").scrollTop($("#content")[0].scrollHeight);
-			if(f) 
-			{
+					$("#content").scrollTop($("#content")[0].scrollHeight);
+			if(f) {
 				content.html(html);
 				f = false;
 			}
-			else
-			{
+			else{
 				content.append(html);
 			}
 			$("#msg_"+spid).emoticonize();
@@ -38,8 +41,7 @@ window.onload = function() {
             console.log("There is a problem:", data);
         }
 		
-		if(data.connected_users)
-		{
+		if(data.connected_users){
 			var ul = $("#usersOnline");
 			var html = "<li>Users Online</li>";
 			for (var key in data.connected_users) {
@@ -48,14 +50,31 @@ window.onload = function() {
 			ul.html(html);
 		}
     });
- 
+ 	
+ 	socket.on('disconnectingClients', function(data){
+ 		//console.log(data);
+ 		if(data.connected_users){
+			var ul = $("#usersOnline");
+			var html = "<li>Users Online</li>";
+			for (var key in data.connected_users) {
+			  html += "<li>"+key+"</li>";
+			}	
+			ul.html(html);
+
+			var html2 = "";
+			var spid = new Date();
+                html2 += '<span id="disconnectedClient"><b>' + data.disconnected + ':</b> is disconnected ('+ spid.getHours()+ ':' +spid.getMinutes()+ ')</span><br />';
+
+        	content.append(html2);
+ 		}
+ 	});
+
     sendButton.click(function() {
         if($.trim(name.val()) == "") {
             alert("Please type your name!");
 			name.focus();
         } else {
-			if(flag)
-			{
+			if(flag){
 				$("#name").prop("disabled",true);
 				flag = false;
 			}
@@ -72,18 +91,20 @@ window.onload = function() {
     });
 
 	
-	var html  = '<p class="emos"><span class="css-emoticon animated-emoticon">:-)</span><span class="css-emoticon animated-emoticon">:-)</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:)</span> <span class="css-emoticon animated-emoticon">:o)</span> <span class="css-emoticon animated-emoticon">:c)</span> <span class="css-emoticon animated-emoticon">:^)</span> <span class="css-emoticon animated-emoticon">:-D</span> <span class="css-emoticon animated-emoticon">:-(</span> <span class="css-emoticon animated-emoticon">:-9</span> <span class="css-emoticon animated-emoticon">;-)</span> <span class="css-emoticon animated-emoticon">:-P</span> <span class="css-emoticon animated-emoticon">:-p</span> <span class="css-emoticon animated-emoticon">:-Þ</span> <span class="css-emoticon animated-emoticon">:-b</span> <span class="css-emoticon animated-emoticon">:-O</span> <span class="css-emoticon animated-emoticon">:-/</span> <span class="css-emoticon animated-emoticon">:-X</span> <span class="css-emoticon animated-emoticon">:-#</span> <span class="css-emoticon animated-emoticon">:\'(</span> <span class="css-emoticon animated-emoticon">B-)</span> <span class="css-emoticon animated-emoticon">8-)</span> <span class="css-emoticon animated-emoticon">:-\</span> <span class="css-emoticon animated-emoticon">;*(</span> <span class="css-emoticon animated-emoticon">:-*</span><span class="css-emoticon animated-emoticon spaced-emoticon">:]</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:&gt;</span> <span class="css-emoticon animated-emoticon spaced-emoticon">=]</span> <span class="css-emoticon animated-emoticon spaced-emoticon">=)</span> <span class="css-emoticon animated-emoticon spaced-emoticon">8)</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:}</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:D</span> <span class="css-emoticon animated-emoticon small-emoticon spaced-emoticon">8D</span> <span class="css-emoticon animated-emoticon small-emoticon spaced-emoticon">XD</span> <span class="css-emoticon animated-emoticon small-emoticon spaced-emoticon">xD</span> <span class="css-emoticon animated-emoticon small-emoticon spaced-emoticon">=D</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:(</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:&lt;</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:[</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:{</span> <span class="css-emoticon animated-emoticon spaced-emoticon">=(</span> <span class="css-emoticon animated-emoticon spaced-emoticon">;)</span> <span class="css-emoticon animated-emoticon spaced-emoticon">;]</span> <span class="css-emoticon animated-emoticon spaced-emoticon">;D</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:P</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:p</span> <span class="css-emoticon animated-emoticon spaced-emoticon">=P</span> <span class="css-emoticon animated-emoticon spaced-emoticon">=p</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:b</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:Þ</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:O</span> <span class="css-emoticon animated-emoticon small-emoticon spaced-emoticon">8O</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:/</span> <span class="css-emoticon animated-emoticon spaced-emoticon">=/</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:S</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:#</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:X</span> <span class="css-emoticon animated-emoticon spaced-emoticon">B)</span> <span class="css-emoticon animated-emoticon small-emoticon spaced-emoticon">O:)</span>';
+	var html  = '<p class="emos"><span class="css-emoticon animated-emoticon">:-)</span><span class="css-emoticon animated-emoticon">:-)</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:)</span> <span class="css-emoticon animated-emoticon">:o)</span> <span class="css-emoticon animated-emoticon">:c)</span> <span class="css-emoticon animated-emoticon">:^)</span> <span class="css-emoticon animated-emoticon">:-D</span> <span class="css-emoticon animated-emoticon">:-(</span> <span class="css-emoticon animated-emoticon">:-9</span> <span class="css-emoticon animated-emoticon">;-)</span> <span class="css-emoticon animated-emoticon">:-P</span> <span class="css-emoticon animated-emoticon">:-p</span> <span class="css-emoticon animated-emoticon">:-Ãž</span> <span class="css-emoticon animated-emoticon">:-b</span> <span class="css-emoticon animated-emoticon">:-O</span> <span class="css-emoticon animated-emoticon">:-/</span> <span class="css-emoticon animated-emoticon">:-X</span> <span class="css-emoticon animated-emoticon">:-#</span> <span class="css-emoticon animated-emoticon">:\'(</span> <span class="css-emoticon animated-emoticon">B-)</span> <span class="css-emoticon animated-emoticon">8-)</span> <span class="css-emoticon animated-emoticon">:-\</span> <span class="css-emoticon animated-emoticon">;*(</span> <span class="css-emoticon animated-emoticon">:-*</span><span class="css-emoticon animated-emoticon spaced-emoticon">:]</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:&gt;</span> <span class="css-emoticon animated-emoticon spaced-emoticon">=]</span> <span class="css-emoticon animated-emoticon spaced-emoticon">=)</span> <span class="css-emoticon animated-emoticon spaced-emoticon">8)</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:}</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:D</span> <span class="css-emoticon animated-emoticon small-emoticon spaced-emoticon">8D</span> <span class="css-emoticon animated-emoticon small-emoticon spaced-emoticon">XD</span> <span class="css-emoticon animated-emoticon small-emoticon spaced-emoticon">xD</span> <span class="css-emoticon animated-emoticon small-emoticon spaced-emoticon">=D</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:(</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:&lt;</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:[</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:{</span> <span class="css-emoticon animated-emoticon spaced-emoticon">=(</span> <span class="css-emoticon animated-emoticon spaced-emoticon">;)</span> <span class="css-emoticon animated-emoticon spaced-emoticon">;]</span> <span class="css-emoticon animated-emoticon spaced-emoticon">;D</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:P</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:p</span> <span class="css-emoticon animated-emoticon spaced-emoticon">=P</span> <span class="css-emoticon animated-emoticon spaced-emoticon">=p</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:b</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:Ãž</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:O</span> <span class="css-emoticon animated-emoticon small-emoticon spaced-emoticon">8O</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:/</span> <span class="css-emoticon animated-emoticon spaced-emoticon">=/</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:S</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:#</span> <span class="css-emoticon animated-emoticon spaced-emoticon">:X</span> <span class="css-emoticon animated-emoticon spaced-emoticon">B)</span> <span class="css-emoticon animated-emoticon small-emoticon spaced-emoticon">O:)</span>';
+	
+
 	html += '<span class="css-emoticon animated-emoticon pink-emoticon counter-rotated">&lt;3</span> <span class="css-emoticon animated-emoticon red-emoticon spaced-emoticon">;(</span> <span class="css-emoticon animated-emoticon red-emoticon small-emoticon spaced-emoticon">&gt;:)</span> <span class="css-emoticon animated-emoticon red-emoticon small-emoticon spaced-emoticon">&gt;;)</span> <span class="css-emoticon animated-emoticon red-emoticon small-emoticon spaced-emoticon">&gt;:(</span> <span class="css-emoticon animated-emoticon no-rotate">O_o</span> <span class="css-emoticon animated-emoticon no-rotate">O_O</span> <span class="css-emoticon animated-emoticon no-rotate">o_o</span> <span class="css-emoticon animated-emoticon no-rotate">0_o</span> <span class="css-emoticon animated-emoticon no-rotate">T_T</span> <span class="css-emoticon animated-emoticon no-rotate">^_^</span> <span class="css-emoticon animated-emoticon">?-)</span></p>';
+	
 	$("#field").after(html);
 	$(".css-emoticon").wrap("<a href='javascript:' class='postEmo'></a>");
 	$('.emo').emoticonize();
 	$(".postEmo").on("click", function(){
-		if($.trim(name.val()) == "") {
+		if($.trim(name.val()) == ""){
             alert("Please type your name!");
 			name.focus();
         }
-		else
-		{
+		else{
 			socket.emit('send', { message: $(this).text(), username: $.trim(name.val()) });
 			field.val("");
 		}
