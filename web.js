@@ -34,9 +34,9 @@ var io = require('socket.io').listen(app.listen(port));
 io.sockets.on('connection', function (socket) {
 	socket.emit('message', { message: 'welcome to the chat ', "connected_users" : connected_users});    
 	socket.on('send', function (data) {
-		console.log("have come here");
 		username = data.username;
-		console.log(username);
+		socket.username = username;
+		//console.log(username);
 		delete connected_users[username];
         connected_users[username] = data.username;
 		data.connected_users = connected_users;
@@ -44,9 +44,10 @@ io.sockets.on('connection', function (socket) {
 		console.log("conc", connected_users, username);
     });
 	//socket.on('close',function(){
-	socket.on('disconnect', function(){
-		console.log("disc", connected_users, "usename:", username);
-        delete connected_users[username];
-        io.sockets.emit('disconnectingClients', {"connected_users":connected_users, "disconnected": username});
+	socket.on('disconnect', function(data){
+		//console.log("disc", connected_users, "username:", username);
+		//console.log(username, socket.username);
+        delete connected_users[socket.username];
+        io.sockets.emit('disconnectingClients', {"connected_users":connected_users, "disconnected": socket.username});
     });
 });
